@@ -467,10 +467,9 @@ argc--;
   if(datadump)
  {
   if(sim_avffd)
-   fprintf(sim_avffd,"FDD_reg FDD_mem TDD_reg TDD_mem unknown NOP ACE Prefetching IQ_AVF ROB_AVF FU_AVF L2readmiss L2readaccess dcachereadMiss dcacheReadAccess dtlbTotalMiss dtlbTotalAccess icacheReadMiss icacheReadAccess itlbTotalmiss itlbTotalAccess  floatRegWrite intRegWrite floatRegRead intRegRead CommitedFpinst CommitedIntInst CommitedInst StoreInst LoadInst branchMisspredict branchInst fpIntNum intInstNum totalInst busyCycle totalCycle IPC\n");
-
+   fprintf(sim_avffd,"simpoint_ID FDD_reg FDD_mem TDD_reg TDD_mem unknown NOP ACE Prefetching IQ_AVF ROB_AVF FU_AVF\n");
   else
-   printf("FDD_reg FDD_mem TDD_reg TDD_mem unknown NOP ACE Prefetching IQ_AVF ROB_AVF FU_AVF L2readmiss L2readaccess dcachereadMiss dcacheReadAccess dtlbTotalMiss dtlbTotalAccess icacheReadMiss icacheReadAccess itlbTotalmiss itlbTotalAccess  floatRegWrite intRegWrite floatRegRead intRegRead CommitedFpinst CommitedIntInst CommitedInst StoreInst LoadInst branchMisspredict branchInst fpIntNum intInstNum totalInst busyCycle totalCycle IPC\n");
+   printf("simpoint_ID FDD_reg FDD_mem TDD_reg TDD_mem unknown NOP ACE Prefetching IQ_AVF ROB_AVF FU_AVF\n");
  }
   sim_main();
 

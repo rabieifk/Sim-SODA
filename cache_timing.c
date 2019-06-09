@@ -74,35 +74,7 @@
 
 
 
-//-------------------
 
-int *icacheMiss1=0;
-int *icacheHit1=0;
-
-int *dcacheMiss1=0;
-int *dcacheHit1=0;
-
-int *icachereplacement=0;
-int *dcachereplacement=0;
-
-int *dcacheWriteBack=0;
-
-int *l2cacheHit1=0;
-int *l2cacheMiss1=0;
-
-int *l2cachereplacement=0;
-int *l2cacheWriteBack=0;
-
-int *itlbcacheMiss1=0;
-int *itlbcacheHit1=0;
-
-int *dtlbcacheMiss1=0;
-int *dtlbcacheHit1=0;
-
-
-//----------------------------------
-
-//-----------------------------------------
 
 int dcache_bsize=0;
 int dcache_tag_shift=0;
@@ -627,15 +599,6 @@ do_writeback(tick_t now,
 
   /* write back the cache block */
   cp->writebacks++;
-  if(strcmp(cp->name,"DL1")==0)
-  {
-    *dcacheWriteBack++;
-  }
-  if(strcmp(cp->name,"L2")==0)
-  {
-    *l2cacheWriteBack++;
-  }
-
 
   if (ARE_SUBBLOCKS_DIRTY(blk))
     {
@@ -1263,28 +1226,6 @@ cache_timing_access(tick_t now,			/* time of access */
   /* cache block not found */
   cp->misses++;
   
-  if(strcmp(cp->name,"IL1")==0)
-  {
-    *icacheMiss1++;
-  } 
-  else if(strcmp(cp->name,"DL1")==0)
-  {
-    *dcacheMiss1++;
-  } 
-  else if(strcmp(cp->name,"L2")==0)
-  {
-    *l2cacheMiss1++;
-  } 
-  else if(strcmp(cp->name,"DTLB")==0)
-  {
-    *dtlbcacheMiss1++;
-  } 
-  else if(strcmp(cp->name,"ITLB")==0)
-  {
-    *itlbcacheMiss1++;
-  } 
-    
-  
     
   
   /* Check victim buffer for a hit */
@@ -1319,18 +1260,6 @@ cache_timing_access(tick_t now,			/* time of access */
       if (repl->status & CACHE_BLK_VALID)
 	  {
 	   cp->replacements++;
-     if(strcmp(cp->name,"IL1")==0)
-      {
-        *icachereplacement++;
-      } 
-      else if(strcmp(cp->name,"DL1")==0)
-      {
-        *dcachereplacement++;
-      }
-      else if(strcmp(cp->name,"L2")==0)
-      {
-        *l2cachereplacement++;
-      } 
 	  
 	  if (repl->status & CACHE_BLK_DIRTY) {
 	    do_writeback(now, cp, CACHE_MK_BADDR(cp, repl->tag, repl->set), vorp, repl);
@@ -1390,28 +1319,7 @@ cache_timing_access(tick_t now,			/* time of access */
   if ((cache_diff_addr_trap && strcmp(cp->name, dcache_name)==0 && is_read(cmd))){
     for (mshr_index=0; mshr_index< MSHR_NREGULARS(cp);mshr_index++) {
       if ((MSHR_ADDR((cp), (mshr_index)) != baddr) && ((MSHR_ADDR2((cp), (mshr_index)) & cp->set_mask) == (c_packet->addr & cp->set_mask))) {
-	     cp->misses--;
-
-        if(strcmp(cp->name,"IL1")==0)
-        {
-         *icacheMiss1--;
-        } 
-        else if(strcmp(cp->name,"DL1")==0)
-        {
-         *dcacheMiss1--;
-        } 
-        else if(strcmp(cp->name,"L2")==0)
-        {
-         *l2cacheMiss1--;
-        } 
-        else if(strcmp(cp->name,"DTLB")==0)
-        {
-          *dtlbcacheMiss1--;
-        } 
-        else if(strcmp(cp->name,"ITLB")==0)
-        {
-          *itlbcacheMiss1--;
-        } 
+	cp->misses--;
 
 	cache_free_access_packet(c_packet);
 	cache_diffaddr_trap++;
@@ -1426,26 +1334,6 @@ cache_timing_access(tick_t now,			/* time of access */
   if (mshr_index == MSHRS_FULL)
     {
       cp->misses--;
-      if(strcmp(cp->name,"IL1")==0)
-      {
-       *icacheMiss1--;
-      } 
-      else if(strcmp(cp->name,"DL1")==0)
-      {
-       *dcacheMiss1--;
-      } 
-      else if(strcmp(cp->name,"L2")==0)
-      {
-       *l2cacheMiss1--;
-      } 
-      else if(strcmp(cp->name,"DTLB")==0)
-      {
-        *dtlbcacheMiss1--;
-      } 
-      else if(strcmp(cp->name,"ITLB")==0)
-      {
-       *itlbcacheMiss1--;
-      } 
       /* BUGFIX 05/27/2004 - Start */
       cp->mshr_misses++;
       /* BUGFIX 05/27/2004 - End */ 
@@ -1574,26 +1462,6 @@ cache_timing_access(tick_t now,			/* time of access */
   if (target_index == TARGET_FULL)
     {
       cp->misses--;
-      if(strcmp(cp->name,"IL1")==0)
-      {
-        *icacheMiss1--;
-      } 
-      if(strcmp(cp->name,"DL1")==0)
-      {
-        *dcacheMiss1--;
-      } 
-      if(strcmp(cp->name,"L2")==0)
-      {
-        *l2cacheMiss1--;
-      }
-      else if(strcmp(cp->name,"DTLB")==0)
-      {
-        *dtlbcacheMiss1--;
-      } 
-      else if(strcmp(cp->name,"ITLB")==0)
-      {
-       *itlbcacheMiss1--;
-      }  
 
       /* Fixme: would be a lot more efficient if we tied this event queue into freeing
 	 of the specific mshr whose targets were full, instead of just any generic mshr
@@ -1611,26 +1479,6 @@ cache_timing_access(tick_t now,			/* time of access */
     }
   if (target_index == TARGET_OCCUPIED) {
     cp->misses--;
-    if(strcmp(cp->name,"IL1")==0)
-    {
-      *icacheMiss1--;
-    } 
-    else if(strcmp(cp->name,"DL1")==0)
-    {
-      *dcacheMiss1--;
-    } 
-    else if(strcmp(cp->name,"L2")==0)
-    {
-      *l2cacheMiss1--;
-    } 
-    else if(strcmp(cp->name,"DTLB")==0)
-    {
-      *dtlbcacheMiss1--;
-    }
-    else if(strcmp(cp->name,"ITLB")==0)
-    {
-      *itlbcacheMiss1--;
-    }  
 	
     cache_free_access_packet(c_packet);
     return TARGET_OCCUPIED;
@@ -1715,29 +1563,6 @@ cache_timing_access(tick_t now,			/* time of access */
     }
   }
   cp->hits++;
-
-  if(strcmp(cp->name,"IL1")==0)
-  {
-    *icacheHit1++;
-  } 
-  else if(strcmp(cp->name,"DL1")==0)
-  {
-    *dcacheHit1++;
-  } 
-  else if(strcmp(cp->name,"L2")==0)
-  {
-    *l2cacheHit1++;
-  }
-  else if(strcmp(cp->name,"DTLB")==0)
-  {
-    *dtlbcacheHit1++;
-  } 
-  else if(strcmp(cp->name,"ITLB")==0)
-  {
-    *itlbcacheHit1++;
-  } 
-
-  
 
 #ifdef BALLOC
   /* copy data out of cache block, if block exists */
@@ -1878,26 +1703,6 @@ cache_timing_access(tick_t now,			/* time of access */
     }
   }
   cp->hits++;
-  if(strcmp(cp->name,"IL1")==0)
-  {
-    *icacheHit1++;
-  }
-  else if(strcmp(cp->name,"DL1")==0)
-  {
-    *dcacheHit1++;
-  } 
-  else if(strcmp(cp->name,"L2")==0)
-  {
-    *l2cacheHit1++;
-  } 
-  else if(strcmp(cp->name,"DTLB")==0)
-  {
-    *dtlbcacheHit1++;
-  } 
-  else if(strcmp(cp->name,"ITLB")==0)
-  {
-    *itlbcacheHit1++;
-  }  
 
 #ifdef BALLOC
   /* copy data out of cache block, if block exists */
@@ -2125,18 +1930,6 @@ response_handler(tick_t now,
       if (repl->status & CACHE_BLK_VALID)
 	{
 	  cp->replacements++;
-    if(strcmp(cp->name,"IL1")==0)
-    {
-     *icachereplacement++;
-    } 
-    else if(strcmp(cp->name,"DL1")==0)
-    {
-     *dcachereplacement++;
-    }
-    else if(strcmp(cp->name,"L2")==0)
-    {
-     *l2cachereplacement++;
-    } 
 	  
 	  if (repl->status & CACHE_BLK_DIRTY)
 	    {

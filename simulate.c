@@ -149,7 +149,6 @@ int fu_idle_counter;
 
 
 unsigned int interval_inst;
-unsigned int cycleInterval_inst;
 
 tick_t current_cycle;
 
@@ -174,11 +173,6 @@ sim_reg_options(struct opt_odb_t *odb)
   opt_reg_uint(odb, "-interval", "interval size to dump AVF data, in the unit of 1K instruction",
 	       &interval_inst, /* default */1000, /* print */TRUE, 
 	       /* format */NULL);
-
-  	opt_reg_uint(odb, "-cycleInterval", "interval size to dump AVF data, in the unit of 1K cycle",
-	       &cycleInterval_inst, /* default */10, /* print */TRUE, 
-	       /* format */NULL);
-
   opt_reg_uint(odb, "-datadump", "dump AVF per interval?",
 	       &datadump, /* default */1, /* print */TRUE, 
 	       /* format */NULL);
@@ -1507,8 +1501,6 @@ sim_main(void) {
     
     /* call the commit stage */
     commit_stage();
-    
-    data_dump();
     
     /* call execute stage*/
     writeback_stage();

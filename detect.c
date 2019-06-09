@@ -13,7 +13,7 @@
 * Everyone is granted permission to copy, modify and redistribute
 * this source file under the following conditions:
 *
-*    This tool set is distributed for non-commercial use only. 
+*    This tool set is distributed for non-commercial use only.f-inter 
 *    Please contact the maintainer for restrictions applying to 
 *    commercial use of these tools.
 *
@@ -71,40 +71,12 @@
 #include "slot.h"
 #include "map.h"
 #include "tddfdd.h"
-//#include "issue.c"
-//#include "params.h"
 
-extern int *ROB_read;
 
-extern int *num_int_issued;
-extern int *num_fp_issued;
 
-extern int *icacheMiss1;
-extern int *icacheHit1;
 
-extern int *dcacheMiss1;
-extern int *dcacheHit1;
 
-extern int *dcacheWriteBack;
 
-extern int *l2cacheHit1;
-extern int *l2cacheMiss1;
-
-extern int *l2cachereplacement;
-extern int *l2cacheWriteBack;
-
-extern int *icachereplacement;
-extern int *dcachereplacement;
-
-extern int *itlbcacheMiss1;
-extern int *itlbcacheHit1;
-
-extern int *dtlbcacheMiss1;
-extern int *dtlbcacheHit1;
-
-extern int *missprediction;
-
-//struct cache *cp;
 
 /* The analysis window is implemented as a linked list, has the head node (firstinst) and rear node (rearinst) */
 LISTPTR firstinst;
@@ -120,99 +92,6 @@ long unknown=0;
 long acecounter=0;
 long nop=0;
 long prefetch=0;
-
-//------------------------------------
-int *icacheMiss1_tillcur=0;
-int *icacheHit1_tillcur=0;
-
-int *dcacheMiss1_tillcur=0;
-int *dcacheHit1_tillcur=0;
-
-int *icachereplacement_tillcur=0;
-int *dcachereplacement_tillcur=0;
-
-int *itlbcacheMiss1_tillcur=0;
-int *itlbcacheHit1_tillcur=0;
-
-int *dtlbcacheMiss1_tillcur=0;
-int *dtlbcacheHit1_tillcur=0;
-
-int icacheAccess1_step=0;
-
-int *dcacheWriteBack_step=0;
-int *dcacheWriteBack_tillcur=0;
-
-int *l2cacheMiss1_step=0;
-int *l2cacheMiss1_tillcur=0;
-
-int *l2cachereplacement_step=0;
-int *l2cachereplacement_tillcur=0;
-
-int *missprediction_step=0;
-int *missprediction_tillcur=0;
-
-//------------------
-int *icacheMiss1_step=0;
-int *icacheHit1_step=0;
-
-int *dcacheMiss1_step=0;
-int *dcacheHit1_step=0;
-
-int *icachereplacement_step=0;
-int *dcachereplacement_step=0;
-
-int *l2cacheHit1_step=0;
-int *l2cacheHit1_tillcur=0;
-
-int *l2cacheWriteBack_step=0;
-int *l2cacheWriteBack_tillcur=0;
-
-int *itlbcacheMiss1_step=0;
-int *itlbcacheHit1_step=0;
-
-int *dtlbcacheMiss1_step=0;
-int *dtlbcacheHit1_step=0;
-
-int *num_int_issued_tillcur=0;
-int *num_fp_issued_tillcur=0;
-
-int *num_int_issued_step=0;
-int *num_fp_issued_step=0;
-
-int *ROB_read_step=0;
-int *ROB_read_tillcur=0;
-
-//------------------------------------
-
-
-
-long sim_tillcur_insn=0;
-long sim_step_insn=0;
-long sim_step_branch=0;
-long sim_tillcur_branch=0;
-long sim_tillcur_intRegRead=0;
-long sim_step_intRegRead=0;
-long sim_tillcur_intRegWrite=0;
-long sim_step_intRegWrite=0;
-long sim_step_fpRegRead=0;
-long sim_tillcur_fpRegRead=0;
-long sim_step_fpRegWrite =0;
-long sim_tillcur_fpRegWrite=0;
-long sim_step_loads = 0;
-long sim_tillcur_loads=0;
-long sim_step_stores = 0;
-long sim_tillcur_stores=0;
-long sim_step_executed = 0;
-long sim_tillcur_executed=0;
-long sim_step_bpred_misses = 0;
-long sim_tillcur_bpred_misses =0;
-long DL1_step_accesses =0;
-long sim_tillcur_DL1_accesses=0;
-long sim_step_committed_insn=0;
-long sim_tillcur_insn_committed=0;
-long cycle_num_tillcur=0;
-long cycle_num_step=0;
-
 
 
 FILE *sim_avffd;
@@ -298,7 +177,6 @@ float rf_AVF=0;
 
 
 unsigned int interval_inst;
-unsigned int cycleInterval_inst;
 long tablecounter=0;
 tick_t cycle_num=0;
 
@@ -1264,8 +1142,6 @@ void identifyFDDTDD()
 void data_dump()
 {
 	
-
-
 	float IQ_AVF;
 	float ROB_AVF;
 	float FU_AVF;
@@ -1273,116 +1149,21 @@ void data_dump()
 	
   if(datadump)
   {
-  //  if(((sim_num_insn-WINSIZE)%(1000*interval_inst)==0)&&(sim_num_insn>WINSIZE))
- 	if( (sim_cycle % (cycleInterval_inst *1000) ==0 )&&(sim_num_insn>WINSIZE))
+    //if(((sim_num_insn-WINSIZE)%(1000*interval_inst)==0)&&(sim_num_insn>WINSIZE))
+    if((sim_num_insn>WINSIZE))
 	{
-		//some things that we add to it-----------------
-        sim_step_insn = sim_num_insn - sim_tillcur_insn;
-		sim_tillcur_insn = sim_num_insn;
-
-		sim_step_committed_insn = sim_total_insn - sim_tillcur_insn_committed;
-		sim_tillcur_insn_committed = sim_total_insn;
-
-		sim_step_branch = sim_num_branches - sim_tillcur_branch;
-		sim_tillcur_branch = sim_num_branches;
-
-		sim_step_intRegRead = stat_int_reg_reads - sim_tillcur_intRegRead;
-		sim_tillcur_intRegRead = stat_int_reg_reads;
-
-		sim_step_intRegWrite = stat_int_reg_writes - sim_tillcur_intRegWrite;
-		sim_tillcur_intRegWrite = stat_int_reg_writes;
-
-		sim_step_fpRegRead = stat_fp_reg_reads - sim_tillcur_fpRegRead;
-		sim_tillcur_fpRegRead = stat_fp_reg_reads;
-
-		sim_step_fpRegWrite = stat_fp_reg_writes - sim_tillcur_fpRegWrite;
-		sim_tillcur_fpRegWrite = stat_fp_reg_writes;
-
-		sim_step_loads = sim_num_loads - sim_tillcur_loads;
-		sim_tillcur_loads = sim_num_loads;
-
-		sim_step_stores = (sim_num_refs - sim_num_loads) - sim_tillcur_stores;
-		sim_tillcur_stores = sim_num_refs - sim_num_loads;
-
-		sim_step_executed = sim_total_insn - sim_tillcur_executed;
-		sim_tillcur_executed = sim_total_insn;
-
-		sim_step_bpred_misses = pred->misses - sim_tillcur_bpred_misses ;
-		sim_tillcur_bpred_misses = pred->misses;
-
-		icacheHit1_step = icacheHit1 - icacheHit1_tillcur;
-		icacheHit1_tillcur = icacheHit1;
-
-		icacheMiss1_step = icacheMiss1 - icacheMiss1_tillcur;
-		icacheMiss1_tillcur = icacheMiss1;
-
-		//icacheAccess1_step = *icacheHit1_step + *icacheMiss1_step;
-
-		icachereplacement_step = icachereplacement- icachereplacement_tillcur;
-		icachereplacement_tillcur = icachereplacement;
-
-		dcacheHit1_step = dcacheHit1- dcacheHit1_tillcur;
-		dcacheHit1_tillcur = dcacheHit1;
-
-		dcacheMiss1_step = dcacheMiss1- dcacheMiss1_tillcur;
-		dcacheMiss1_tillcur = dcacheMiss1;
-
-		dcachereplacement_step = dcachereplacement- dcachereplacement_tillcur;
-		dcachereplacement_tillcur = dcachereplacement;
-
-		dcacheWriteBack_step = dcacheWriteBack- dcacheWriteBack_tillcur;
-		dcacheWriteBack_tillcur = dcacheWriteBack;
-
-		l2cacheHit1_step = l2cacheHit1- l2cacheHit1_tillcur;
-		l2cacheHit1_tillcur = l2cacheHit1;
-
-		l2cacheMiss1_step = l2cacheMiss1- l2cacheMiss1_tillcur;
-		l2cacheMiss1_tillcur = l2cacheMiss1;
-
-		l2cachereplacement_step = l2cachereplacement- l2cachereplacement_tillcur;
-		l2cachereplacement_tillcur = l2cachereplacement;
-
-		l2cacheWriteBack_step = l2cacheWriteBack- l2cacheWriteBack_tillcur;
-		l2cacheWriteBack_tillcur = l2cacheWriteBack;
-
-		dtlbcacheHit1_step = dtlbcacheHit1- dtlbcacheHit1_tillcur;
-		dtlbcacheHit1_tillcur = dtlbcacheHit1;
-
-		dtlbcacheMiss1_step = dtlbcacheMiss1- dtlbcacheMiss1_tillcur;
-		dtlbcacheMiss1_tillcur = dtlbcacheMiss1;
-
-		itlbcacheHit1_step = itlbcacheHit1 - itlbcacheHit1_tillcur;
-		itlbcacheHit1_tillcur = itlbcacheHit1;
-
-		itlbcacheMiss1_step = itlbcacheMiss1- itlbcacheMiss1_tillcur; 
-		itlbcacheMiss1_tillcur = itlbcacheMiss1;
-
-		missprediction_step = missprediction - missprediction_tillcur;
-		missprediction_tillcur = missprediction;
-
-		num_int_issued_step = num_int_issued - num_int_issued_tillcur;
-		num_int_issued_tillcur = num_int_issued;
-
-		num_fp_issued_step = num_fp_issued - num_fp_issued_tillcur;
-		num_fp_issued_tillcur = num_fp_issued;
-
-		ROB_read_step = ROB_read - ROB_read_tillcur;
-		ROB_read_tillcur = ROB_read;
-
-		//----------------------------------------------
-		//assert((1000*interval_inst)==(fddregcounter+fddmemcounter+tddregcounter+tddmemcounter+unknown+acecounter+nop+prefetch));
-	 // if(sim_avffd)
-	   //fprintf(sim_avffd,"%ld ", (signed long)((sim_num_insn-WINSIZE)/(1000*interval_inst)));
-	  //else
-	    //printf("%ld ", (signed long)((sim_num_insn-WINSIZE)/(1000*interval_inst)));
+		assert((1000*interval_inst)==(fddregcounter+fddmemcounter+tddregcounter+tddmemcounter+unknown+acecounter+nop+prefetch));
+	  if(sim_avffd)
+	   fprintf(sim_avffd,"%ld ", (signed long)((sim_num_insn-WINSIZE)/(1000*interval_inst)));
+	  else
+	    printf("%ld ", (signed long)((sim_num_insn-WINSIZE)/(1000*interval_inst)));
 	
-	  cycle_num_step=sim_cycle-cycle_num_tillcur;
-	  cycle_num_tillcur=sim_cycle;
+	  cycle_num=sim_cycle-cycle_num;  
 
       IQ_AVF=((float)(IQACE_cycle5+IQACE_cycle4+IQACE_cycle3+IQACE_cycle2+IQACE_cycle1))*100.0000/(cycle_num*32.0000*(float)map_int_issue_size);
 	  ROB_AVF=((float)(robACE_cycle1+robACE_cycle2+robACE_cycle3))*100.0000/(cycle_num*76.0000*(float)map_rb_nelem);
 	  FU_AVF=((float)(fuACE_cycle6+fuACE_cycle5+fuACE_cycle4+fuACE_cycle3+fuACE_cycle2+fuACE_cycle1))*100.0000/(cycle_num*64.0000*3.0000*(float)(res_ialu+res_imult+res_fpalu+res_fpmult));
-	  //wakeup_AVF=((float)cycle_wakeup[(sim_num_insn%WINSIZE)/(1000*interval_inst)])*100.0000/(cycle_num*(float)map_int_issue_size*2.0000);
+	  wakeup_AVF=((float)cycle_wakeup[(sim_num_insn%WINSIZE)/(1000*interval_inst)])*100.0000/(cycle_num*(float)map_int_issue_size*2.0000);
 
      if(sim_avffd)
 	  {
@@ -1400,56 +1181,9 @@ void data_dump()
       fprintf(sim_avffd,"%f ",ROB_AVF);
 
       fprintf(sim_avffd,"%f ",FU_AVF);
-
-      fprintf(sim_avffd,"%i ",l2cacheMiss1_step);
-      fprintf(sim_avffd,"%i ",l2cacheHit1_step);
-
-      fprintf(sim_avffd,"%i ", dcacheMiss1_step);
-      fprintf(sim_avffd,"%i ", dcacheHit1_step);
-
-      fprintf(sim_avffd,"%i ", dtlbcacheMiss1_step);
-      fprintf(sim_avffd,"%i ", dtlbcacheHit1_step);
-
-      fprintf(sim_avffd,"%i ", icacheMiss1_step);
-      fprintf(sim_avffd,"%i ", icacheHit1_step);
-
-      fprintf(sim_avffd,"%i ", itlbcacheMiss1_step);
-      fprintf(sim_avffd,"%i ", itlbcacheHit1_step);
-
-      fprintf(sim_avffd,"%i ", sim_step_fpRegWrite);
-      fprintf(sim_avffd,"%i ", sim_step_intRegWrite);
-      fprintf(sim_avffd,"%i ", sim_step_fpRegRead);
-      fprintf(sim_avffd,"%i ", sim_step_intRegRead);
-
-      fprintf(sim_avffd,"%i ", sim_step_committed_insn/4);
-      fprintf(sim_avffd,"%i ", sim_step_committed_insn/2);
-      fprintf(sim_avffd,"%i ", sim_step_committed_insn);
-      fprintf(sim_avffd,"%i ", sim_step_stores);
-      fprintf(sim_avffd,"%i ", sim_step_loads);
-      fprintf(sim_avffd,"%i ", missprediction_step);
-      fprintf(sim_avffd,"%i ", sim_step_branch);
-      fprintf(sim_avffd,"%i ", sim_step_insn/4);
-      fprintf(sim_avffd,"%i ", sim_step_insn/2);
-      fprintf(sim_avffd,"%i ", sim_step_insn);
-      fprintf(sim_avffd,"%i ", cycle_num_step);
-      fprintf(sim_avffd,"%i ", cycle_num_step);
-
-      fprintf(sim_avffd,"%f",(float) sim_step_insn / cycle_num_step);
+	  
+//	  fprintf(sim_avffd,"%f ",wakeup_AVF);
       fprintf(sim_avffd,"\n");
-	  
-	  //some things that we add to it-----------
-
-	/* 	  
-	  fprintf(sim_avffd,"%i ", icachereplacement_step);
-	  fprintf(sim_avffd,"%i ", dcachereplacement_step);
-	  fprintf(sim_avffd,"%i ", dcacheWriteBack_step);	  
-	  fprintf(sim_avffd,"%i ",l2cachereplacement_step);
-	  fprintf(sim_avffd,"%i ",l2cacheWriteBack_step);
-	  fprintf(sim_avffd,"%i ", dtlbcacheHit1_step);
-	  
-	 */ 
-	  //-----------------------------------------
-      
 	  }
 
     else
@@ -1468,53 +1202,9 @@ void data_dump()
       printf("%f ",ROB_AVF);
 
       printf("%f ",FU_AVF);
-
-      printf("%i ",l2cacheMiss1_step);
-      printf("%i ",l2cacheHit1_step);
-
-      printf("%i ", dcacheMiss1_step);
-      printf("%i ", dcacheHit1_step);
-
-      printf("%i ", dtlbcacheMiss1_step);
-      printf("%i ", dtlbcacheHit1_step);
-
-      printf("%i ", icacheMiss1_step);
-      printf("%i ", icacheHit1_step);
-
-      printf("%i ", itlbcacheMiss1_step);
-      printf("%i ", itlbcacheHit1_step);
-
-      printf("%i ", sim_step_fpRegWrite);
-      printf("%i ", sim_step_intRegWrite);
-      printf("%i ", sim_step_fpRegRead);
-      printf("%i ", sim_step_intRegRead);
-
-      printf("%i ", sim_step_committed_insn/4);
-      printf("%i ", sim_step_committed_insn/2);
-      printf("%i ", sim_step_committed_insn);
-      printf("%i ", sim_step_stores);
-      printf("%i ", sim_step_loads);
-      printf("%i ", missprediction_step);
-      printf("%i ", sim_step_branch);
-      printf("%i ", sim_step_insn/4);
-      printf("%i ", sim_step_insn/2);
-      printf("%i ", sim_step_insn);
-      printf("%i ", cycle_num_step);
-      printf("%i ", cycle_num_step);
-      //printf("%i ", sim_cycle);
-      //printf("%i ", cycle_num_tillcur);
-      //printf("%i ", num_fp_issued_step);
-      //printf("%i ", num_int_issued_step);  
-      //printf("%i ", ROB_read_step);
-      printf("%f ",  (float) sim_step_insn / cycle_num_step);
-      printf("\n");
-/*	 
-	  printf("%i ", icachereplacement_step);
-	  printf("%i ", dcachereplacement_step);
-	  printf("%i ", dcacheWriteBack_step);
-	  printf("%i ",l2cachereplacement_step);
-	  printf("%i ",l2cacheWriteBack_step);
-*/
+	  
+//	  printf("%f ",wakeup_AVF);
+	  printf("\n");
 	 }
      
 	 IQ_ACEcycle=IQ_ACEcycle+IQACE_cycle5+IQACE_cycle4+IQACE_cycle3+IQACE_cycle2+IQACE_cycle1;
